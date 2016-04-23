@@ -22,13 +22,21 @@ sigma = 0.3;
 %  Note: You can compute the prediction error using 
 %        mean(double(predictions ~= yval))
 %
+cMatrix = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30];
+results = zeros(64,1);
 
+for i = 1 : 8
+    for j = 1 : 8
+        model= svmTrain(X, y, cMatrix(i), @(x1, x2) gaussianKernel(x1, x2, cMatrix(j))); 
+        predictions = svmPredict(model, Xval);
+        results((i-1)*8+j,1) = mean(double(predictions ~= yval));
+    end
+end
 
+[~,result] = min(results);
 
-
-
-
-
+C = cMatrix(floor(result/8));
+sigma = cMatrix(result - floor(result/8)*8);
 % =========================================================================
 
 end
